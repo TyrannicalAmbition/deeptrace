@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "slowpoke-finder"
-version = "0.1.0"
+version = "0.1.1"
 description = "Library for analyzing slow steps in Playwright, Selenium and Allure logs"
 authors = ["Anastasia Litvinenko"]
 license = "MIT"
