@@ -17,7 +17,7 @@ jobs:
           python -m pip install --upgrade pip && pip install -r requirements.txt -q
 
       - name: Ruff
-        run: ruff .
+        run: ruff check .
 
       - name: Mypy
         run: mypy slowpoke_finder
