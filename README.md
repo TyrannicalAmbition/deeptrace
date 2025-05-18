@@ -32,6 +32,7 @@ pip install slowpoke-finder
 ## Usage
 ### CLI: Command-Line Examples
 
+
 You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`.
 The tool does not auto-detect log format.
 ---
