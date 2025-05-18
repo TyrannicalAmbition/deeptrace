@@ -41,7 +41,7 @@ auto-detect log format.
 
 ---
 
-**Find Top N Slowest Steps**
+### Find Top N Slowest Steps
 
 ```bash
 slowpoke-finder path/to/log.json --format playwright --top 5
