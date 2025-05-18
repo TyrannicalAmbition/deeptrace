@@ -20,7 +20,7 @@ jobs:
         run: ruff check .
 
       - name: Mypy
-        run: mypy slowpoke_finder
+        run: mypy slowpoke-finder
 
       - name: Tests
         run: pytest -q
