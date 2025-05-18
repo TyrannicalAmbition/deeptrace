@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {
+      "name": "hover",
+      "startTime": 5,
+      "endTime": 20
+    },
+    {
+      "name": "click",
+      "startTime": 22,
+      "endTime": 40
+    }
+  ]
+}

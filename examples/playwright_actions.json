@@ -1,0 +1,16 @@
+{
+  "actions": [
+    {
+      "name": "click",
+      "selector": "#login",
+      "startTime": 10,
+      "endTime": 120
+    },
+    {
+      "name": "fill",
+      "selector": "#password",
+      "startTime": 130,
+      "endTime": 250
+    }
+  ]
+}

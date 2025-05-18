@@ -1,0 +1,12 @@
+[
+  {
+    "name": "goto",
+    "startTime": 0,
+    "endTime": 15
+  },
+  {
+    "name": "type",
+    "startTime": 20,
+    "endTime": 35
+  }
+]
