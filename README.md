@@ -25,3 +25,72 @@ Install via **pip** (or pipx for global CLI):
 
 ```bash
 pip install slowpoke-finder
+```
+
+---
+
+## Usage
+### CLI: Command-Line Examples
+
+You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`.
+The tool does not auto-detect log format.
+
+**Find Top N Slowest Steps**
+```bash
+slowpoke-finder path/to/log.json --format playwright --top 5
+```
+The `--top` flag is optional and defaults to 5.
+So you can simply run:
+```bash
+slowpoke-finder path/to/log.json --format playwright
+```
+
+**Find All Steps Above a Threshold**
+```bash
+slowpoke-finder path/to/allure-results --format allure --threshold 1000
+```
+
+**Analyze Selenium HAR Log**
+```bash
+slowpoke-finder path/to/selenium.har --format selenium
+```
+
+---
+
+## Common Arguments
+
+`log`: Path to a log file or directory (e.g., JSON, HAR, or Allure results folder).
+
+`--format` / `-f`: Input log format: playwright, selenium, allure.
+
+`--top` / `-n`: Show top N slowest steps (default: 5).
+
+`--threshold` / `-t`: Show all steps slower than N ms (overrides --top if set).
+
+---
+
+## Python Library Usage
+
+```python
+from slowpoke_finder.registry import get
+from slowpoke_finder.analyzer import top_slow_steps
+
+parser = get("selenium")
+steps = parser.parse("examples/selenium_actions.json")
+top_steps = top_slow_steps(steps, top=3)
+
+for step in top_steps:
+    print(f"{step.name}: {step.duration} ms")
+```
+- Choose the parser by format: `get("selenium")`, `get("playwright")`, or `get("allure")`
+- Each parser returns a list of Step objects (`.name`, `.start_ms`, `.end_ms`, `.duration`)
+
+---
+
+## Supported Formats
+
+| Format         | Description                            | How to Use                                 |
+| -------------- | -------------------------------------- | ------------------------------------------ |
+| **playwright** | Playwright JSON logs (`actions` array) | Point at a Playwright JSON log file        |
+| **selenium**   | Selenium WebDriver logs (JSON or HAR)  | Point at a Selenium JSON/HAR log file      |
+| **allure**     | Allure `allure-results` folder (JSON)  | Point at the root of an Allure results dir |
