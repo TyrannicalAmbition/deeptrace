@@ -2,7 +2,7 @@
 name = "slowpoke-finder"
 version = "0.1.0"
 description = "CLI-инструмент для поиска самых медленных шагов в логах тестов Playwright/Selenium"
-authors = ["Твоё имя <you@example.com>"]
+authors = ["Анастасия Литвиненко"]
 license = "MIT"
 readme = "README.md"
 packages = [
