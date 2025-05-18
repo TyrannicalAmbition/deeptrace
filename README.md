@@ -34,7 +34,7 @@ pip install slowpoke-finder
 
 You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`.
 The tool does not auto-detect log format.
-
+---
 
 **Find Top N Slowest Steps**
 ```bash
@@ -45,13 +45,13 @@ So you can simply run:
 ```bash
 slowpoke-finder path/to/log.json --format playwright
 ```
-
+---
 
 **Find All Steps Above a Threshold**
 ```bash
 slowpoke-finder path/to/allure-results --format allure --threshold 1000
 ```
-
+---
 
 **Analyze Selenium HAR Log**
 ```bash
