@@ -36,7 +36,9 @@ pip install slowpoke-finder
 
 ### CLI: Command-Line Examples
 
-You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`. The tool does not auto-detect log format.
+You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`. The tool does not
+auto-detect log format.
+
 ---
 
 **Find Top N Slowest Steps**
