@@ -1,0 +1,6 @@
+{
+  "entries": [
+    {"name": "Step 1", "startTime": 1, "endTime": 30},
+    {"name": "Step 2", "startTime": 35, "endTime": 65}
+  ]
+}

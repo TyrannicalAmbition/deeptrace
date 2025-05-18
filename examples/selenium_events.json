@@ -1,0 +1,6 @@
+{
+  "seleniumEvents": [
+    {"name": "Open page", "startTime": 0, "endTime": 100},
+    {"name": "Click submit", "startTime": 150, "endTime": 170}
+  ]
+}

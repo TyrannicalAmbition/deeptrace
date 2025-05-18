@@ -1,0 +1,4 @@
+[
+  {"name": "Click login", "startTime": 10, "endTime": 110},
+  {"eventName": "Type password", "timestamp": 120, "duration": 40}
+]

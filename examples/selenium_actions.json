@@ -1,0 +1,6 @@
+{
+  "actions": [
+    {"name": "Navigate", "startTime": 0, "endTime": 50},
+    {"eventName": "Wait", "timestamp": 60, "duration": 15}
+  ]
+}
