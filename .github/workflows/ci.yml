@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip && pip install -r requirements.txt -q
+
+      - name: Ruff
+        run: ruff .
+
+      - name: Mypy
+        run: mypy slowpoke_finder
+
+      - name: Tests
+        run: pytest -q
