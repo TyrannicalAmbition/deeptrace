@@ -56,7 +56,7 @@ slowpoke-finder path/to/log.json --format playwright
 
 ---
 
-**Find All Steps Above a Threshold**
+### Find All Steps Above a Threshold
 
 ```bash
 slowpoke-finder path/to/allure-results --format allure --threshold 1000
@@ -64,7 +64,7 @@ slowpoke-finder path/to/allure-results --format allure --threshold 1000
 
 ---
 
-**Analyze Selenium HAR Log**
+### Analyze Selenium HAR Log
 
 ```bash
 slowpoke-finder path/to/selenium.har --format selenium
