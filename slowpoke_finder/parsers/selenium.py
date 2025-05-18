@@ -7,35 +7,32 @@ from ..registry import register
 @register("selenium")
 class SeleniumParser:
     """
-    Поддерживает Selenium-логи в HAR, массиве действий и популярных json-структурах.
+    Supports Selenium logs in HAR, action array and popular json structures.
     """
 
     def parse(self, path: str) -> List[Step]:
         """
-        Возвращает список Step, найденных в логе.
-        Поддержка форматов:
-          - HAR (log.entries[])
-          - Массив событий [{...}]
-          - Корневой ключ seleniumEvents: [{...}]
-          - Корневой ключ actions: [{...}]
+        Returns a list of Steps found in the log.
+        Supported formats:
+            - HAR (log.entries[])
+            - Array of events [{...}]
+            - Root key seleniumEvents: [{...}]
+            - Root key actions: [{...}]
         """
         with open(path, encoding="utf-8") as f:
             try:
                 data = json.load(f)
             except Exception as e:
-                raise ValueError(f"Ошибка разбора JSON: {e}")
+                raise ValueError(f"JSON parsing error: {e}")
 
-        # HAR: log.entries[]
         if isinstance(data, dict) and "log" in data and "entries" in data["log"]:
             steps = []
             for entry in data["log"]["entries"]:
-                # Network HAR: используем startedDateTime и time
                 name = entry.get("request", {}).get("url") or entry.get(
                     "pageref", "step"
                 )
                 start = entry.get("startedDateTime")
                 duration = entry.get("time", 0)
-                # HAR не хранит endTime, только start+duration. Для совместимости:
                 try:
                     start_ms = self._iso_to_ms(start)
                 except Exception:
@@ -49,23 +46,19 @@ class SeleniumParser:
                 )
             return steps
 
-        # Ключ seleniumEvents (как в некоторых custom json логах)
         if isinstance(data, dict) and "seleniumEvents" in data:
             return self._extract_from_list(data["seleniumEvents"])
 
-        # Ключ actions (аналогично playwright, встречается иногда)
         if isinstance(data, dict) and "actions" in data:
             return self._extract_from_list(data["actions"])
 
-        # Простой массив в корне
         if isinstance(data, list):
             return self._extract_from_list(data)
 
-        # Попробовать entries в корне
         if isinstance(data, dict) and "entries" in data:
             return self._extract_from_list(data["entries"])
 
-        raise ValueError("Не удалось найти поддерживаемый формат для selenium-логов")
+        raise ValueError("Could not find supported format for selenium logs")
 
     def _extract_from_list(self, lst):
         steps = []
@@ -86,7 +79,6 @@ class SeleniumParser:
         return steps
 
     def _iso_to_ms(self, iso_str):
-        # Преобразует ISO 8601 дату в миллисекунды с начала эпохи (UTC)
         from datetime import datetime
 
         if not iso_str:

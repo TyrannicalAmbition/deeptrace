@@ -1,26 +1,20 @@
 [tool.poetry]
 name = "slowpoke-finder"
 version = "0.1.0"
-description = "CLI-инструмент для поиска самых медленных шагов в логах тестов Playwright/Selenium"
-authors = ["Анастасия Литвиненко"]
+description = "Library for analyzing slow steps in Playwright, Selenium and Allure logs"
+authors = ["Anastasia Litvinenko"]
 license = "MIT"
 readme = "README.md"
-packages = [
-    { include = "slowpoke_finder" }
-]
+packages = [{ include = "slowpoke_finder" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-typer = "^0.12.0"
+typer = "^0.9.4"
+click = "8.1.7"
 
 [tool.poetry.scripts]
 slowpoke-finder = "slowpoke_finder.cli:app"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-ruff = "^0.4.2"
-black = "^24.4.2"
-mypy = "^1.10.0"
-
-pre-commit = "^4.2.0"
-pytest-stub = "^1.1.0"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

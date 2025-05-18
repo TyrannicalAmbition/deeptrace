@@ -8,7 +8,7 @@ from ..registry import register
 @register("allure")
 class AllureParser:
     """
-    Парсер для allure-логов (allure-results/result*.json, container*.json и т.д.)
+    Parser for allure logs (allure-results/result*.json, container*.json, etc.)
     """
 
     def parse(self, path: str) -> Iterator[Step]:

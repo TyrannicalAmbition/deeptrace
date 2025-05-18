@@ -23,7 +23,9 @@ class PlaywrightParser:
         elif isinstance(data, list):
             actions = data
         else:
-            raise ValueError("Лог Playwright не содержит подходящего списка действий.")
+            raise ValueError(
+                "The Playwright log does not contain a suitable list of actions."
+            )
 
         steps: List[Step] = []
         for entry in actions:
