@@ -1,0 +1,7 @@
+{
+  "actions": [
+    {"name": "click #submit", "startTime": 0, "endTime": 4200},
+    {"name": "waitForSelector .popup", "startTime": 4201, "endTime": 8000},
+    {"name": "fill #email", "startTime": 10, "endTime": 50}
+  ]
+}
