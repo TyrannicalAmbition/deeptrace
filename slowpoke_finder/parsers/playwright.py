@@ -29,9 +29,7 @@ class PlaywrightParser:
         for entry in actions:
             try:
                 start = int(entry.get("startTime", 0))
-                end = int(
-                    entry.get("endTime", start)
-                )  # если endTime нет — считаем, что 0 ms
+                end = int(entry.get("endTime", start))
                 name = entry.get("name") or entry.get("event") or "unknown"
                 steps.append(Step(name=name, start_ms=start, end_ms=end))
             except Exception:

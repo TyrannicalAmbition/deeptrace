@@ -1,5 +1,6 @@
 import typer
 from slowpoke_finder.registry import get
+from slowpoke_finder.analyzer import top_slow_steps
 
 app = typer.Typer()
 
@@ -28,12 +29,6 @@ def analyze(
         typer.echo("Шаги не найдены", err=True)
         raise typer.Exit(1)
 
-    # Выводим топ
-    for i, step in enumerate(
-        sorted(steps, key=lambda s: s.duration, reverse=True)[:top], 1
-    ):
+    top_steps = top_slow_steps(steps, top)
+    for i, step in enumerate(top_steps, 1):
         typer.echo(f"{i}. {step.name} - {step.duration} ms")
-
-
-if __name__ == "__main__":
-    app()
