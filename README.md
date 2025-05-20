@@ -16,6 +16,7 @@ Selenium, or Allure-based test suites are bottlenecks, using log files or Allure
 - **Universal Log Format Support**: Analyze logs from Playwright, Selenium (JSON/HAR), or Allure results folder.
 - **Highlight Slow Steps**: Show the slowest steps (`--top N`) or all steps slower than a given
   threshold (`--threshold`).
+- **Markdown Report Generation**: Generate a Markdown report with --report.
 - **Simple CLI**: Analyze logs with a single command.
 - **Python API**: Use as a library in your automation scripts or test infrastructure.
 - **Fast and Lightweight**: Designed to work with very large logs and fast parsing.
@@ -78,6 +79,15 @@ slowpoke-finder path/to/selenium.har --format selenium
 
 ---
 
+#### Generate a Markdown Report
+Use the `--report` (or `-r`) flag to save results to a Markdown file.
+Specify a directory name (it will be created if it does not exist); the report will be saved as report.md inside that directory.
+```bash
+slowpoke-finder path/to/log.json --format playwright --top 10 --report my-report-dir
+```
+
+---
+
 ## Common Arguments
 
 `log`: Path to a log file or directory (e.g., JSON, HAR, or Allure results folder).
@@ -87,6 +97,8 @@ slowpoke-finder path/to/selenium.har --format selenium
 `--top` / `-n`: Show top N slowest steps (default: 5).
 
 `--threshold` / `-t`: Show all steps slower than N ms (overrides --top if set).
+
+`--report` / `-r`: Directory to save Markdown report (report will be report.md inside this directory).
 
 ---
 
