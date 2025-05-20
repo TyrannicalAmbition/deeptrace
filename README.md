@@ -24,6 +24,12 @@ Selenium, or Allure-based test suites are bottlenecks, using log files or Allure
 
 ## Installation
 
+### Currently, the library is published only on **Test PyPI**
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ slowpoke-finder
+```
+
 Install via **pip** (or pipx for global CLI):
 
 ```bash
