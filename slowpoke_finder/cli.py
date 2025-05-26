@@ -1,18 +1,49 @@
 from __future__ import annotations
 
-from pathlib import Path
 import heapq
+from pathlib import Path
+from typing import List, Sequence, Optional
+
+from rich.columns import Columns
+
 import typer
-from slowpoke_finder.registry import get
+from rich.console import Console
+
+from slowpoke_finder.analyzer import deduplicate_avg
+from slowpoke_finder.models import Step
+from slowpoke_finder.registry import get as get_parser
 from slowpoke_finder.utils import (
-    print_steps_table,
-    print_stats,
     generate_markdown_report,
-    get_stats,
     get_report_path,
+    get_stats,
+    print_rich_steps_table,
+    make_rich_stats_table,
 )
 
+console = Console()
 app = typer.Typer(no_args_is_help=True)
+
+
+def collect_log_files(root: Path, patterns: Sequence[str]) -> list[Path]:
+    """Gather files matching patterns under *root* (recursively)."""
+    files: list[Path] = []
+    for pattern in patterns:
+        files.extend(root.rglob(pattern))
+    return files
+
+
+def parse_files(paths: list[Path], parser) -> list["Step"]:
+    """Parse all files and aggregate steps (ignores unreadable files)."""
+    steps: list["Step"] = []
+    errors: list[tuple[Path, str]] = []
+    for p in paths:
+        try:
+            steps.extend(parser.parse(str(p)))
+        except Exception as exc:  # noqa: BLE001
+            errors.append((p, str(exc)))
+    if errors:
+        console.print(f"[yellow]Skipped {len(errors)} file(s) due to parse errors[/]")
+    return steps
 
 
 @app.command()
@@ -21,58 +52,79 @@ def analyze(
     format: str = typer.Option(
         ..., "--format", "-f", help="playwright | selenium | allure"
     ),
-    top: int = typer.Option(5, "--top", "-n", help="Show top N slow steps"),
-    threshold: int = typer.Option(
-        None, "--threshold", "-t", help="Show steps slower than threshold (ms)"
+    top: int = typer.Option(
+        5, "--top", "-n", help="Show N slowest steps after other filters"
     ),
-    report: str = typer.Option(
-        None, "--report", "-r", help="Directory to save markdown report"
+    threshold: Optional[int] = typer.Option(
+        None,
+        "--threshold",
+        "-t",
+        help="Show steps slower than threshold (ms)",
+    ),
+    report: Optional[str] = typer.Option(
+        None,
+        "--report",
+        "-r",
+        help="Directory to save markdown report",
+    ),
+    percentiles: List[int] = typer.Option(
+        (95, 99),
+        "--percentiles",
+        "-p",
+        help="Extra percentiles: repeat flag, e.g. -p 50 -p 95 -p 99",
     ),
 ) -> None:
-    """Analyze logs and print slow steps."""
-    paths: list[Path]
+    """
+    Parse Playwright / Selenium / Allure logs and print the slowest steps.
+
+    Examples
+    --------
+    $ slowpoke-finder analyze ./allure-results -f allure -n 10
+    $ slowpoke-finder analyze run.json -f playwright -t 500
+    """
     log_path = Path(log)
     if log_path.is_dir():
-        paths = list(log_path.rglob("*.json")) + list(log_path.rglob("*.har"))
+        paths = collect_log_files(log_path, ("*.json", "*.har"))
         if not paths:
-            typer.echo(f"No *.json / *.har files in {log}", err=True)
+            console.print(f"[red]No *.json / *.har files in {log}[/]")
             raise typer.Exit(1)
     else:
         paths = [log_path]
 
     try:
-        parser = get(format)
+        parser = get_parser(format)
     except ValueError as exc:
-        typer.echo(str(exc), err=True)
+        console.print(f"[red]{exc}[/]")
         raise typer.Exit(2)
 
-    all_steps = []
-    for p in paths:
-        try:
-            all_steps.extend(parser.parse(str(p)))
-        except Exception as e:  # noqa: BLE001
-            typer.echo(f"Parse error {p}: {e}", err=True)
+    all_steps = parse_files(paths, parser)
+    all_steps = deduplicate_avg(all_steps)
 
     if not all_steps:
-        typer.echo("No steps found", err=True)
-        raise typer.Exit(1)
+        console.print("[red]No steps found[/]")
+        raise typer.Exit(3)
 
-    if threshold is not None:
-        steps_out = [s for s in all_steps if s.duration >= threshold]
-        if not steps_out:
-            typer.echo(f"No steps >= {threshold} ms")
-            raise typer.Exit(0)
-        title = f"Steps >= {threshold} ms"
-    else:
-        steps_out = heapq.nlargest(top, all_steps, key=lambda s: s.duration)
-        title = f"Top {top} slowest steps"
+    # Apply filters
+    filtered = [s for s in all_steps if threshold is None or s.duration >= threshold]
+    if not filtered:
+        console.print(f"No steps ≥ {threshold} ms")
+        raise typer.Exit(0)
 
-    print_steps_table(steps_out, title=title)
-    stats = get_stats(steps_out)
-    print_stats(stats)
+    # Sort top N
+    filtered = heapq.nlargest(top, filtered, key=lambda s: s.duration)
+
+    # Render
+    print_rich_steps_table(filtered, title="Slow steps")
+    stats_filtered = get_stats(filtered, percentiles)
+    stats_all = get_stats(all_steps, percentiles)
+    table_filtered = make_rich_stats_table(stats_filtered, "Stats (filtered)")
+    table_all = make_rich_stats_table(stats_all, "Stats (all)")
+    console.print(Columns([table_filtered, table_all]))
 
     if report:
         report_path = get_report_path(report)
-        report_content = generate_markdown_report(steps_out, stats)
-        report_path.write_text(report_content, encoding="utf-8")
-        typer.echo(f"Report saved -> {report_path}")
+        report_path.write_text(
+            generate_markdown_report(filtered, stats_filtered),
+            encoding="utf-8",
+        )
+        console.print(f"Report saved -> {report_path}")
