@@ -52,14 +52,14 @@ auto-detect log format.
 ### Find Top N Slowest Steps
 
 ```bash
-slowpoke-finder path/to/log.json --format playwright --top 5
+slowpoke-finder analyze path/to/log.json --format playwright --top 5
 ```
 
 The `--top` flag is optional and defaults to 5.
 So you can simply run:
 
 ```bash
-slowpoke-finder path/to/log.json --format playwright
+slowpoke-finder analyze path/to/log.json --format playwright
 ```
 
 ---
@@ -67,7 +67,7 @@ slowpoke-finder path/to/log.json --format playwright
 ### Find All Steps Above a Threshold
 
 ```bash
-slowpoke-finder path/to/allure-results --format allure --threshold 1000
+slowpoke-finder analyze path/to/allure-results --format allure --threshold 1000
 ```
 
 ---
@@ -75,12 +75,12 @@ slowpoke-finder path/to/allure-results --format allure --threshold 1000
 ### Show Additional Percentiles
 
 ```bash
-slowpoke-finder path/to/log.json --format playwright --percentiles 50 --percentiles 95 --percentiles 99
+slowpoke-finder analyze path/to/log.json --format playwright --percentiles 50 --percentiles 95 --percentiles 99
 ```
 
 or short:
 ```bash
-slowpoke-finder path/to/log.json -f playwright -p 50 -p 95 -p 99
+slowpoke-finder analyze path/to/log.json -f playwright -p 50 -p 95 -p 99
 ```
 
 ---
@@ -88,7 +88,7 @@ slowpoke-finder path/to/log.json -f playwright -p 50 -p 95 -p 99
 ### Analyze Selenium HAR Log
 
 ```bash
-slowpoke-finder path/to/selenium.har --format selenium
+slowpoke-finder analyze path/to/selenium.har --format selenium
 ```
 
 ---
@@ -97,7 +97,7 @@ slowpoke-finder path/to/selenium.har --format selenium
 Use the `--report` (or `-r`) flag to save results to a Markdown file.
 Specify a directory name (it will be created if it does not exist); the report will be saved as report.md inside that directory.
 ```bash
-slowpoke-finder path/to/log.json --format playwright --top 10 --report my-report-dir
+slowpoke-finder analyze path/to/log.json --format playwright --top 10 --report my-report-dir
 ```
 
 ---
@@ -115,6 +115,29 @@ slowpoke-finder path/to/log.json --format playwright --top 10 --report my-report
 `--report` / `-r`: Directory to save Markdown report (report will be report.md inside this directory).
 
 `--percentiles` / `-p`: Additional percentiles for summary (repeatable flag).
+
+---
+
+## A/B Comparison Report (HTML)
+
+Analyze two test runs side by side with an interactive HTML report.
+Perfect for comparing performance between branches, builds, or environments.
+
+Features of the HTML A/B Report
+- **Horizontal Bar Chart**: Instantly spot the slowest steps between two runs (top 10), side-by-side. 
+- **Sortable Table**: All steps, their durations in both runs, absolute and relative differences. Click any column to sort (ascending/descending)
+
+### Generate a Comparison Report
+
+```bash
+slowpoke-finder compare <runA.json> <runB.json> -f <playwright|selenium|allure> --report-dir ab-report
+```
+
+### Open the Report
+
+```bash
+slowpoke-finder view-report ab-report
+```
 
 ---
 
