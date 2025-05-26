@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>A/B Report — {{ name_a }} vs {{ name_b }}</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<h1>A/B Report: {{ name_a }} vs {{ name_b }}</h1>
+
+<details open>
+  <summary>Durations chart</summary>
+  <div id="chart"></div>
+</details>
+
+<details open>
+  <summary>Step comparison table</summary>
+  <div id="table"></div>
+</details>
+
+<script src="assets/plotly.min.js"></script>
+<script>
+fetch("ab_data.json")
+  .then(r => r.json())
+  .then(data => {
+    // ------------ horizontal bar chart (top-10) ---------------------------
+    const sorted = data
+      .slice()
+      .sort((a, b) => Math.max(b.a ?? 0, b.b ?? 0) - Math.max(a.a ?? 0, a.b ?? 0));
+    const top = sorted.slice(0, 10).filter(r => r.a !== null && r.b !== null);
+
+    const shrink = n => (n.length > 38 ? n.slice(0, 35) + "…" : n);
+    const y = top.map(r => shrink(r.name));
+
+    Plotly.newPlot(
+      "chart",
+      [
+        { y, x: top.map(r => r.a), type: "bar", name: "{{ name_a }}", orientation: "h" },
+        { y, x: top.map(r => r.b), type: "bar", name: "{{ name_b }}", orientation: "h" }
+      ],
+      {
+        barmode: "group",
+        height: 600,
+        margin: { l: 320, r: 40, t: 60, b: 40 },
+        title: "Top 10 Slowest Steps",
+        yaxis: { automargin: true},
+        xaxis: { title: "Duration (ms)" }
+      }
+    );
+
+    // ---------------- sortable HTML table ---------------------------------
+    const columns = [
+      ["name", "Step", false],
+      ["a", "{{ name_a }}", true],
+      ["b", "{{ name_b }}", true],
+      ["diff", "Diff (ms)", true],
+      ["diff_pct", "Diff (%)", true]
+    ];
+
+    let sortKey = "diff";
+    let sortAsc = false;
+    let current = data.slice();
+
+    function sortData(key, asc) {
+      current.sort((a, b) => {
+        let va = a[key], vb = b[key];
+        if (va === null || va === undefined) return 1;
+        if (vb === null || vb === undefined) return -1;
+        if (typeof va === "string")
+          return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+        return asc ? va - vb : vb - va;
+      });
+    }
+
+    function buildTable() {
+      sortData(sortKey, sortAsc);
+      const head = columns
+        .map(([k, label], i) =>
+          `<th onclick="sortCol(${i})">${label} ${
+            sortKey === k ? (sortAsc ? "▲" : "▼") : ""
+          }</th>`
+        )
+        .join("");
+      let h = `<table><thead><tr>${head}</tr></thead><tbody>`;
+      for (const r of current) {
+        h += `<tr>
+          <td>${r.name}</td>
+          <td>${r.a ?? ""}</td>
+          <td>${r.b ?? ""}</td>
+          <td>${r.diff ?? ""}</td>
+          <td>${r.diff_pct ?? ""}</td>
+        </tr>`;
+      }
+      h += "</tbody></table>";
+      return h;
+    }
+
+    window.sortCol = idx => {
+      const [key] = columns[idx];
+      if (sortKey === key) sortAsc = !sortAsc;
+      else {
+        sortKey = key;
+        sortAsc = true;
+      }
+      document.getElementById("table").innerHTML = buildTable();
+    };
+
+    document.getElementById("table").innerHTML = buildTable();
+  })
+  .catch(() => {
+    document.getElementById("table").innerHTML = "<em>Failed to load data!</em>";
+  });
+</script>
+</body>
+</html>

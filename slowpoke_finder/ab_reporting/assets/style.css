@@ -1,0 +1,47 @@
+/* --- Table -------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: auto;
+  min-width: 600px;
+  margin-bottom: 2rem;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background: #f4f6fb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+td {
+  font-size: 14px;
+}
+
+/* first column (step name) wraps text */
+td:first-child {
+  max-width: 340px;
+  min-width: 160px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Mobile — shrink font & column widths */
+@media (max-width: 900px) {
+  td:first-child {
+    max-width: 120px;
+    min-width: 60px;
+    font-size: 12px;
+  }
+  table {
+    min-width: 320px;
+    font-size: 12px;
+  }
+}
