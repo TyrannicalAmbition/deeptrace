@@ -2,7 +2,6 @@
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TyrannicalAmbition/slowpocke-finder/ci.yml?branch=main)](https://github.com/TyrannicalAmbition/slowpocke-finder/actions)
 [![PyPI Version](https://img.shields.io/pypi/v/slowpoke-finder)](https://pypi.org/project/slowpoke-finder/)
-[![License](https://img.shields.io/github/license/TyrannicalAmbition/slowpocke-finder)](./LICENSE)
 
 **Slowpoke Finder** is a CLI tool and Python library for analyzing automated test logs and finding the slowest steps in
 your test runs.  
@@ -16,7 +15,9 @@ Selenium, or Allure-based test suites are bottlenecks, using log files or Allure
 - **Universal Log Format Support**: Analyze logs from Playwright, Selenium (JSON/HAR), or Allure results folder.
 - **Highlight Slow Steps**: Show the slowest steps (`--top N`) or all steps slower than a given
   threshold (`--threshold`).
-- **Markdown Report Generation**: Generate a Markdown report with --report.
+- **Deduplication**: Automatically merges steps with the same name to avoid duplicates in the output.
+- **Advanced Statistics**: Shows median, mean, and custom percentiles (p50, p95, p99, etc.) with the `--percentiles` flag.
+- **Markdown Report Generation**: Generate a Markdown report with `--report`.
 - **Simple CLI**: Analyze logs with a single command.
 - **Python API**: Use as a library in your automation scripts or test infrastructure.
 - **Fast and Lightweight**: Designed to work with very large logs and fast parsing.
@@ -71,6 +72,19 @@ slowpoke-finder path/to/allure-results --format allure --threshold 1000
 
 ---
 
+### Show Additional Percentiles
+
+```bash
+slowpoke-finder path/to/log.json --format playwright --percentiles 50 --percentiles 95 --percentiles 99
+```
+
+or short:
+```bash
+slowpoke-finder path/to/log.json -f playwright -p 50 -p 95 -p 99
+```
+
+---
+
 ### Analyze Selenium HAR Log
 
 ```bash
@@ -94,11 +108,13 @@ slowpoke-finder path/to/log.json --format playwright --top 10 --report my-report
 
 `--format` / `-f`: Input log format: playwright, selenium, allure.
 
-`--top` / `-n`: Show top N slowest steps (default: 5).
+`--top` / `-n`: Show top N the slowest steps (default: 5).
 
 `--threshold` / `-t`: Show all steps slower than N ms (overrides --top if set).
 
 `--report` / `-r`: Directory to save Markdown report (report will be report.md inside this directory).
+
+`--percentiles` / `-p`: Additional percentiles for summary (repeatable flag).
 
 ---
 
