@@ -79,7 +79,7 @@ slowpoke-finder path/to/selenium.har --format selenium
 
 ---
 
-#### Generate a Markdown Report
+### Generate a Markdown Report
 Use the `--report` (or `-r`) flag to save results to a Markdown file.
 Specify a directory name (it will be created if it does not exist); the report will be saved as report.md inside that directory.
 ```bash
