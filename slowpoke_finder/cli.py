@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import heapq
+from http.server import SimpleHTTPRequestHandler
+import os
+from functools import partial
+import socketserver
+import webbrowser
 from pathlib import Path
 from typing import List, Sequence, Optional
 
-from rich.columns import Columns
-
 import typer
+from rich.columns import Columns
 from rich.console import Console
 
+from slowpoke_finder.ab_reporting import build_ab_report_html
 from slowpoke_finder.analyzer import deduplicate_avg
 from slowpoke_finder.models import Step
 from slowpoke_finder.registry import get as get_parser
@@ -44,6 +49,49 @@ def parse_files(paths: list[Path], parser) -> list["Step"]:
     if errors:
         console.print(f"[yellow]Skipped {len(errors)} file(s) due to parse errors[/]")
     return steps
+
+
+@app.command()
+def compare(
+    run_a: str = typer.Argument(..., help="Path to log/dir for A"),
+    run_b: str = typer.Argument(..., help="Path to log/dir for B"),
+    format: str = typer.Option(..., "--format", "-f"),
+    report_dir: str = typer.Option("ab-report", "--report-dir", help="Output folder"),
+):
+    """Generate an A/B HTML report comparing two runs."""
+    parser = get_parser(format)
+
+    paths_a = (
+        collect_log_files(Path(run_a), ("*.json", "*.har"))
+        if Path(run_a).is_dir()
+        else [Path(run_a)]
+    )
+    paths_b = (
+        collect_log_files(Path(run_b), ("*.json", "*.har"))
+        if Path(run_b).is_dir()
+        else [Path(run_b)]
+    )
+
+    steps_a = deduplicate_avg(parse_files(paths_a, parser))
+    steps_b = deduplicate_avg(parse_files(paths_b, parser))
+
+    build_ab_report_html(steps_a, steps_b, "A", "B", Path(report_dir))
+    console.print(
+        "Report is ready. To view it run:\n"
+        f"[bold green]slowpoke-finder view-report {report_dir}[/bold green]"
+    )
+
+
+@app.command()
+def view_report(report_path: str = typer.Argument(..., help="Path to report folder")):
+    """Serve given report folder at http://localhost:8000/ for quick preview."""
+    os.chdir(report_path)
+    console.print("Serving on http://localhost:8000 (Ctrl+C to quit)")
+    webbrowser.open("http://localhost:8000/index.html")
+
+    handler = partial(SimpleHTTPRequestHandler, directory=".")
+    with socketserver.TCPServer(("", 8000), handler) as httpd:  # type: ignore[arg-type]
+        httpd.serve_forever()
 
 
 @app.command()
@@ -127,4 +175,4 @@ def analyze(
             generate_markdown_report(filtered, stats_filtered),
             encoding="utf-8",
         )
-        console.print(f"Report saved -> {report_path}")
+        console.print(f"Report saved → {report_path}")
