@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+
+from rich.columns import Columns
 from rich.table import Table
+from rich.console import Console
 from statistics import mean, median
 from typing import Iterable, List, Sequence, Tuple
 
@@ -10,8 +13,10 @@ __all__ = [
     "get_report_path",
     "get_stats",
     "generate_markdown_report",
+    "generate_ab_markdown_report",
     "make_rich_stats_table",
     "print_rich_steps_table",
+    "print_rich_ab_comparison",
 ]
 
 from slowpoke_finder.models import Step
@@ -177,6 +182,100 @@ def generate_markdown_report(
     return "\n".join(lines)
 
 
+def generate_ab_markdown_report(
+    steps_a: Iterable["Step"],
+    steps_b: Iterable["Step"],
+    stats_a: Sequence[Tuple[str, str]],
+    stats_b: Sequence[Tuple[str, str]],
+    title: str = "A/B Log Comparison",
+    label_a: str = "A",
+    label_b: str = "B",
+) -> str:
+    """
+    Generate a Markdown report comparing two runs (A/B).
+
+    Parameters
+    ----------
+    steps_a : Iterable[Step]
+        Steps from run A.
+    steps_b : Iterable[Step]
+        Steps from run B.
+    stats_a : Sequence[Tuple[str, str]]
+        Stats for run A.
+    stats_b : Sequence[Tuple[str, str]]
+        Stats for run B.
+    title : str
+        The report title.
+    label_a : str
+        Label for run A.
+    label_b : str
+        Label for run B.
+
+    Returns
+    -------
+    str
+        Markdown report as a string.
+    """
+    steps_a = list(steps_a)
+    steps_b = list(steps_b)
+    steps_dict_a = {s.name: s for s in steps_a}
+    steps_dict_b = {s.name: s for s in steps_b}
+    all_names = sorted(set(steps_dict_a) | set(steps_dict_b))
+
+    lines: list[str] = [f"# {title}", ""]
+
+    lines += [
+        "## Summary\n",
+        f"- {label_a}: {len(steps_a)} steps",
+        f"- {label_b}: {len(steps_b)} steps",
+        "",
+    ]
+
+    lines += [
+        "## Steps comparison",
+        "",
+        f"| Step name | {label_a} (ms) | {label_b} (ms) | Δ (ms) |",
+        "|-----------|--------------:|--------------:|-------:|",
+    ]
+    for name in all_names:
+        a = steps_dict_a.get(name)
+        b = steps_dict_b.get(name)
+        dur_a = a.duration if a else None
+        dur_b = b.duration if b else None
+        delta = None
+        if dur_a is not None and dur_b is not None:
+            delta = dur_b - dur_a
+            sign = "+" if delta >= 0 else ""
+            delta_str = f"{sign}{delta}"
+        elif dur_a is None:
+            delta_str = "new"
+        else:
+            delta_str = "gone"
+        lines.append(
+            f"| {name} | "
+            f"{dur_a if dur_a is not None else ''} | "
+            f"{dur_b if dur_b is not None else ''} | "
+            f"{delta_str} |"
+        )
+
+    lines += [
+        "",
+        f"## Stats for {label_a}",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
+        *[f"| {k} | {v} |" for k, v in stats_a],
+        "",
+        f"## Stats for {label_b}",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
+        *[f"| {k} | {v} |" for k, v in stats_b],
+        "",
+    ]
+    return "\n".join(lines)
+
+
 def make_rich_stats_table(stats: list[tuple[str, str]], title: str) -> Table:
     """
     Create a Rich Table for summary statistics.
@@ -212,9 +311,6 @@ def print_rich_steps_table(steps: Iterable["Step"], title: str = "Slow steps") -
     title : str
         Title for the table (default: "Slow steps").
     """
-    from rich.table import Table
-    from rich.console import Console
-
     console = Console()
     table = Table(title=title, show_lines=False, header_style="bold", box=None)
     table.add_column("Step name", style="cyan", no_wrap=True)
@@ -224,3 +320,79 @@ def print_rich_steps_table(steps: Iterable["Step"], title: str = "Slow steps") -
         table.add_row(s.name, str(s.duration))
 
     console.print(table)
+
+
+def print_rich_ab_comparison(
+    steps_a: Iterable["Step"],
+    steps_b: Iterable["Step"],
+    stats_a: list[tuple[str, str]],
+    stats_b: list[tuple[str, str]],
+    label_a: str = "A",
+    label_b: str = "B",
+):
+    """
+    Console A/B comparison using rich.
+
+    Parameters
+    ----------
+    steps_a : Iterable[Step]
+        Steps from run A.
+    steps_b : Iterable[Step]
+        Steps from run B.
+    stats_a : list[tuple[str, str]]
+        Statistics for run A.
+    stats_b : list[tuple[str, str]]
+        Statistics for run B.
+    label_a : str
+        Label for run A (default: "A").
+    label_b : str
+        Label for run B (default: "B").
+    """
+    steps_a = list(steps_a)
+    steps_b = list(steps_b)
+    steps_dict_a = {s.name: s for s in steps_a}
+    steps_dict_b = {s.name: s for s in steps_b}
+    all_names = sorted(set(steps_dict_a) | set(steps_dict_b))
+
+    console = Console()
+    table = Table(
+        title=f"Steps comparison: {label_a} vs {label_b}",
+        show_lines=False,
+        header_style="bold",
+    )
+    table.add_column("Step name", style="cyan")
+    table.add_column(f"{label_a} (ms)", justify="right", style="magenta")
+    table.add_column(f"{label_b} (ms)", justify="right", style="green")
+    table.add_column("Δ (ms)", justify="right", style="yellow")
+
+    for name in all_names:
+        a = steps_dict_a.get(name)
+        b = steps_dict_b.get(name)
+        dur_a = a.duration if a else None
+        dur_b = b.duration if b else None
+
+        # Calculate delta between runs and set display color
+        if dur_a is not None and dur_b is not None:
+            delta = dur_b - dur_a
+            if delta > 0:
+                delta_str = f"[red]+{delta}[/red]"
+            elif delta < 0:
+                delta_str = f"[green]{delta}[/green]"
+            else:
+                delta_str = "0"
+        elif dur_a is None:
+            delta_str = "[bold blue]new[/bold blue]"
+        else:
+            delta_str = "[dim]gone[/dim]"
+        table.add_row(
+            name,
+            str(dur_a) if dur_a is not None else "",
+            str(dur_b) if dur_b is not None else "",
+            delta_str,
+        )
+
+    # Print steps comparison and stats for each run
+    console.print(table)
+    a_stats = make_rich_stats_table(stats_a, f"Stats for {label_a}")
+    b_stats = make_rich_stats_table(stats_b, f"Stats for {label_b}")
+    console.print(Columns([a_stats, b_stats]))
