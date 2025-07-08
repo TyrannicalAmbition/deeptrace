@@ -22,12 +22,15 @@ __all__ = [
 
 # ───────────────────────── helpers ────────────────────────── #
 
+
 def get_report_path(report_dir: str | Path, fmt: str = "md") -> Path:
     dst = Path(report_dir)
     dst.mkdir(parents=True, exist_ok=True)
     return dst / f"report.{fmt}"
 
+
 # ───────────────────────── statistics ─────────────────────── #
+
 
 def _perc(vals: list[int], p: int) -> int:
     if not vals:
@@ -42,7 +45,10 @@ def _perc(vals: list[int], p: int) -> int:
         return vals[-1]
     return int(vals[f] * (c - k) + vals[c] * (k - f))
 
-def get_stats(steps: Iterable[Step], percentiles: Sequence[int] = (95, 99)) -> List[Tuple[str, str]]:
+
+def get_stats(
+    steps: Iterable[Step], percentiles: Sequence[int] = (95, 99)
+) -> List[Tuple[str, str]]:
     vals = [s.duration for s in steps]
     if not vals:
         return [("Total steps", "0")]
@@ -58,10 +64,16 @@ def get_stats(steps: Iterable[Step], percentiles: Sequence[int] = (95, 99)) -> L
         stats.append((f"P{p}", f"{_perc(vals, p)} ms"))
     return stats
 
+
 # ───────────────────────── markdown ──────────────────────── #
 
-def generate_markdown_report(steps: Iterable[Step], stats: Sequence[Tuple[str, str]], *,
-                              title: str = "DeepTrace Report") -> str:
+
+def generate_markdown_report(
+    steps: Iterable[Step],
+    stats: Sequence[Tuple[str, str]],
+    *,
+    title: str = "DeepTrace Report",
+) -> str:
     steps = list(steps)
     lines = [f"# {title}", ""]
     if not steps:
@@ -76,21 +88,37 @@ def generate_markdown_report(steps: Iterable[Step], stats: Sequence[Tuple[str, s
     lines += [f"| {k} | {v} |" for k, v in stats]
     return "\n".join(lines)
 
-def generate_ab_markdown_report(steps_a, steps_b, stats_a, stats_b,
-                                *, title: str = "A/B Log Comparison",
-                                label_a: str = "A", label_b: str = "B") -> str:
+
+def generate_ab_markdown_report(
+    steps_a,
+    steps_b,
+    stats_a,
+    stats_b,
+    *,
+    title: str = "A/B Log Comparison",
+    label_a: str = "A",
+    label_b: str = "B",
+) -> str:
     sa, sb = list(steps_a), list(steps_b)
     da, db = {s.name: s for s in sa}, {s.name: s for s in sb}
     names = sorted(set(da) | set(db))
 
-    lines = [f"# {title}", "",
-             "## Summary", "",
-             f"- {label_a}: {len(sa)} steps",
-             f"- {label_b}: {len(sb)} steps", ""]
+    lines = [
+        f"# {title}",
+        "",
+        "## Summary",
+        "",
+        f"- {label_a}: {len(sa)} steps",
+        f"- {label_b}: {len(sb)} steps",
+        "",
+    ]
 
-    lines += ["## Steps comparison", "",
-              f"| step | {label_a} | {label_b} | Δ |",
-              "|------|------:|------:|----:|"]
+    lines += [
+        "## Steps comparison",
+        "",
+        f"| step | {label_a} | {label_b} | Δ |",
+        "|------|------:|------:|----:|",
+    ]
     for n in names:
         a = da.get(n)
         b = db.get(n)
@@ -105,26 +133,31 @@ def generate_ab_markdown_report(steps_a, steps_b, stats_a, stats_b,
         lines.append(f"| {n} | {d_a} | {d_b} | {delta} |")
 
     def _stats_block(label, stats):
-        return ["", f"## Stats for {label}", "",
-                "| metric | value |", "|--------|-------|",
-                *[f"| {k} | {v} |" for k, v in stats]]
+        return [
+            "",
+            f"## Stats for {label}",
+            "",
+            "| metric | value |",
+            "|--------|-------|",
+            *[f"| {k} | {v} |" for k, v in stats],
+        ]
+
     lines += _stats_block(label_a, stats_a)
     lines += _stats_block(label_b, stats_b)
     return "\n".join(lines)
 
+
 # ───────────────────────── rich ────────────────────── #
 
 console = Console()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Внутренний фабричный метод
 # ─────────────────────────────────────────────────────────────────────────────
 def _make_table(title: str) -> Table:
     """Единый стиль таблиц: скруглённая рамка + жирные заголовки."""
-    return Table(title=title,
-                 show_header=True,
-                 header_style="bold",
-                 box=box.ROUNDED)
+    return Table(title=title, show_header=True, header_style="bold", box=box.ROUNDED)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -146,7 +179,9 @@ def _stats_to_dict(stats: List[Tuple[str, str]]) -> Dict[str, str]:
     return {k: v for k, v in stats}
 
 
-def print_run_summary(stats: List[Tuple[str, str]], *, title: str = "Run summary") -> None:
+def print_run_summary(
+    stats: List[Tuple[str, str]], *, title: str = "Run summary"
+) -> None:
     """Печатает небольшую панель-сводку до таблиц."""
     d = _stats_to_dict(stats)
     grid = Table.grid(padding=(0, 2))

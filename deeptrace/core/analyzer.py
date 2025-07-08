@@ -5,6 +5,7 @@ from deeptrace.core.models import Step
 
 __all__ = ["deduplicate_avg"]
 
+
 def deduplicate_avg(steps: List[Step]) -> List[Step]:
     """
     Combine steps having the same name: keep the average duration.

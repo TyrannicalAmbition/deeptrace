@@ -6,6 +6,7 @@ from typing import List
 from deeptrace.core.models import Step
 from deeptrace.core.registry import register
 
+
 @register("allure")
 class AllureParser:
     """

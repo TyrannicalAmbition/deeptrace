@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
+
 @dataclass(slots=True)
 class Step:
     """
@@ -8,6 +9,7 @@ class Step:
 
     All parsers must return List[Step].
     """
+
     name: str
     start_ms: int
     end_ms: int

@@ -7,6 +7,7 @@ from typing import List
 from deeptrace.core.models import Step
 from deeptrace.core.registry import register
 
+
 @register("har_generic")
 class HarParser:
     """Supports standalone *.har files (directories are not accepted)."""
@@ -26,7 +27,9 @@ class HarParser:
             duration = int(float(entry.get("time", 0)))
 
             try:
-                t0 = datetime.fromisoformat(started.rstrip("Z")).replace(tzinfo=timezone.utc)
+                t0 = datetime.fromisoformat(started.rstrip("Z")).replace(
+                    tzinfo=timezone.utc
+                )
                 start_ms = int(t0.timestamp() * 1000)
             except Exception:
                 start_ms = 0

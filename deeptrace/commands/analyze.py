@@ -9,22 +9,31 @@ from rich.console import Console
 
 from deeptrace.core.analyzer import deduplicate_avg
 from deeptrace.core.parsers.parser_manager import autodetect_parser
-from deeptrace.utils import (generate_markdown_report, get_report_path, get_stats,
-                             make_rich_stats_table, print_rich_steps_table)
+from deeptrace.utils import (
+    generate_markdown_report,
+    get_report_path,
+    get_stats,
+    make_rich_stats_table,
+    print_rich_steps_table,
+)
 
 console = Console()
 
 
 def analyze(
-    log: Path = typer.Argument(..., dir_okay=True, exists=True,
-                               help="Файл лога или директория allure-results"),
+    log: Path = typer.Argument(
+        ..., dir_okay=True, exists=True, help="Файл лога или директория allure-results"
+    ),
     top: int = typer.Option(5, "--top", "-n", help="Показать N самых долгих шагов"),
-    threshold: Optional[int] = typer.Option(None, "--threshold", "-t",
-                                            help="Фильтр по минимальной длительности, ms"),
-    report: Optional[Path] = typer.Option(None, "--report", "-r",
-                                          help="Директория для сохранения отчёта .md"),
-    percentiles: List[int] = typer.Option((95, 99), "--percentiles", "-p",
-                                          help="Доп. перцентили, напр. -p 90 -p 99"),
+    threshold: Optional[int] = typer.Option(
+        None, "--threshold", "-t", help="Фильтр по минимальной длительности, ms"
+    ),
+    report: Optional[Path] = typer.Option(
+        None, "--report", "-r", help="Директория для сохранения отчёта .md"
+    ),
+    percentiles: List[int] = typer.Option(
+        (95, 99), "--percentiles", "-p", help="Доп. перцентили, напр. -p 90 -p 99"
+    ),
 ):
     console.print("[yellow]Detecting log format...[/]")
     fmt, steps = autodetect_parser(log)
@@ -47,10 +56,14 @@ def analyze(
     stats_all = get_stats(steps, percentiles)
     stats_slow = get_stats(slowest, percentiles)
 
-    console.print(Columns([
-        make_rich_stats_table(stats_slow, "Stats (filtered)"),
-        make_rich_stats_table(stats_all, "Stats (all)")
-    ]))
+    console.print(
+        Columns(
+            [
+                make_rich_stats_table(stats_slow, "Stats (filtered)"),
+                make_rich_stats_table(stats_all, "Stats (all)"),
+            ]
+        )
+    )
 
     if report:
         path = get_report_path(report)

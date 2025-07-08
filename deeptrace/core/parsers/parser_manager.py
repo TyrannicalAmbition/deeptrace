@@ -9,6 +9,7 @@ from typing import Optional, Tuple
 from deeptrace.core.models import Step
 from deeptrace.core.registry import get_all, preload_all_parsers
 
+
 def autodetect_parser(path: Path) -> Tuple[Optional[str], list[Step]]:
     preload_all_parsers()
 

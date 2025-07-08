@@ -144,15 +144,15 @@ slowpoke-finder view-report ab-report
 ## Python Library Usage
 
 ```python
-from slowpoke_finder.registry import get
-from slowpoke_finder.analyzer import top_slow_steps
+from deeptrace.core.registry import get
+from deeptrace.core.analyzer import top_slow_steps
 
 parser = get("selenium")
 steps = parser.parse("examples/selenium_actions.json")
 top_steps = top_slow_steps(steps, top=3)
 
 for step in top_steps:
-    print(f"{step.name}: {step.duration} ms")
+  print(f"{step.name}: {step.duration} ms")
 ```
 
 - Choose the parser by format: `get("selenium")`, `get("playwright")`, or `get("allure")`

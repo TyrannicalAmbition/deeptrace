@@ -7,8 +7,12 @@ from rich.console import Console
 
 from deeptrace.core.analyzer import deduplicate_avg
 from deeptrace.core.parsers.parser_manager import autodetect_parser
-from deeptrace.utils import (generate_ab_markdown_report, get_report_path, get_stats,
-                             print_rich_ab_comparison)
+from deeptrace.utils import (
+    generate_ab_markdown_report,
+    get_report_path,
+    get_stats,
+    print_rich_ab_comparison,
+)
 
 console = Console()
 
@@ -16,8 +20,9 @@ console = Console()
 def compare(
     run_a: Path = typer.Argument(..., exists=True, help="Лог/директория A"),
     run_b: Path = typer.Argument(..., exists=True, help="Лог/директория B"),
-    report: Optional[Path] = typer.Option(None, "--report", "-r",
-                                          help="Директория для сохранения отчёта .md"),
+    report: Optional[Path] = typer.Option(
+        None, "--report", "-r", help="Директория для сохранения отчёта .md"
+    ),
 ):
     for label, p in (("A", run_a), ("B", run_b)):
         if not p.exists():
