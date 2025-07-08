@@ -1,3 +1,4 @@
+from deeptrace.core.parsers.har_generic import HarParser
 from deeptrace.core.parsers.json_generic import JSONGenericParser
 
 
@@ -34,7 +35,7 @@ def test_selenium_entries() -> None:
 
 
 def test_selenium_har() -> None:
-    parser = JSONGenericParser()
+    parser = HarParser()
     result = parser.parse("examples/selenium_har.har")
     assert len(result) == 2
     assert result[0].name == "https://example.com/login"
