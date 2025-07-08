@@ -1,6 +1,6 @@
 # DeepTrace · Test-log performance analyzer
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/<your-org>/deeptrace/ci.yml?branch=main)](https://github.com/<your-org>/deeptrace/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/TyrannicalAmbition/deeptrace/ci.yml?branch=main)](https://github.com/TyrannicalAmbition/deeptrace/actions)
 [![PyPI Version](https://img.shields.io/pypi/v/deeptrace)](https://pypi.org/project/deeptrace/)
 
 **DeepTrace** is a tiny CLI + Python library that pinpoints the slowest steps inside automated-test logs  
