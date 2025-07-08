@@ -1,8 +1,8 @@
-from slowpoke_finder.parsers.selenium import SeleniumParser
+from deeptrace.core.parsers.json_generic import JSONGenericParser
 
 
 def test_selenium_actions() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     result = parser.parse("examples/selenium_actions.json")
     assert len(result) == 2
     assert result[0].name == "Navigate"
@@ -10,7 +10,7 @@ def test_selenium_actions() -> None:
 
 
 def test_selenium_array() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     result = parser.parse("examples/selenium_array.json")
     assert len(result) == 2
     assert result[0].name == "Click login"
@@ -18,7 +18,7 @@ def test_selenium_array() -> None:
 
 
 def test_selenium_events() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     result = parser.parse("examples/selenium_events.json")
     assert len(result) == 2
     assert result[0].name == "Open page"
@@ -26,7 +26,7 @@ def test_selenium_events() -> None:
 
 
 def test_selenium_entries() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     result = parser.parse("examples/selenium_entries.json")
     assert len(result) == 2
     assert result[0].name == "Step 1"
@@ -34,7 +34,7 @@ def test_selenium_entries() -> None:
 
 
 def test_selenium_har() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     result = parser.parse("examples/selenium_har.har")
     assert len(result) == 2
     assert result[0].name == "https://example.com/login"
@@ -42,7 +42,7 @@ def test_selenium_har() -> None:
 
 
 def test_selenium_broken() -> None:
-    parser = SeleniumParser()
+    parser = JSONGenericParser()
     try:
         parser.parse("examples/broken.json")
         assert False, "Exception expected"

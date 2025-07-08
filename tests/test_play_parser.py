@@ -1,8 +1,8 @@
-from slowpoke_finder.parsers.playwright import PlaywrightParser
+from deeptrace.core.parsers.json_generic import JSONGenericParser
 
 
 def test_playwright_actions() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     steps = parser.parse("examples/playwright_actions.json")
     assert len(steps) == 2
     assert steps[0].name == "click"
@@ -11,7 +11,7 @@ def test_playwright_actions() -> None:
 
 
 def test_playwright_events() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     steps = parser.parse("examples/playwright_events.json")
     assert len(steps) == 2
     assert steps[0].name == "navigate"
@@ -20,7 +20,7 @@ def test_playwright_events() -> None:
 
 
 def test_playwright_steps() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     steps = parser.parse("examples/playwright_steps.json")
     assert len(steps) == 2
     assert steps[0].name == "hover"
@@ -29,7 +29,7 @@ def test_playwright_steps() -> None:
 
 
 def test_playwright_array() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     steps = parser.parse("examples/playwright_array.json")
     assert len(steps) == 2
     assert steps[0].name == "goto"
@@ -38,7 +38,7 @@ def test_playwright_array() -> None:
 
 
 def test_playwright_no_end() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     steps = parser.parse("examples/playwright_no_end.json")
     assert len(steps) == 2
     assert steps[0].name == "check"
@@ -48,7 +48,7 @@ def test_playwright_no_end() -> None:
 
 
 def test_playwright_broken() -> None:
-    parser = PlaywrightParser()
+    parser = JSONGenericParser()
     try:
         parser.parse("examples/broken.json")
         assert False, "Exception expected"
