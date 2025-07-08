@@ -1,169 +1,34 @@
-# Slowpoke Finder
+# DeepTrace · Test-log performance analyzer
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TyrannicalAmbition/slowpocke-finder/ci.yml?branch=main)](https://github.com/TyrannicalAmbition/slowpocke-finder/actions)
-[![PyPI Version](https://img.shields.io/pypi/v/slowpoke-finder)](https://pypi.org/project/slowpoke-finder/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/<your-org>/deeptrace/ci.yml?branch=main)](https://github.com/<your-org>/deeptrace/actions)
+[![PyPI Version](https://img.shields.io/pypi/v/deeptrace)](https://pypi.org/project/deeptrace/)
 
-**Slowpoke Finder** is a CLI tool and Python library for analyzing automated test logs and finding the slowest steps in
-your test runs.  
-It helps QA engineers, developers, and DevOps teams quickly identify which actions or steps in their Playwright,
-Selenium, or Allure-based test suites are bottlenecks, using log files or Allure results as input.
+**DeepTrace** is a tiny CLI + Python library that pinpoints the slowest steps inside automated-test logs  
+(Playwright, Selenium, Allure, and more).  
+Perfect for QA engineers, SDETs and DevOps when every second in the pipeline counts.
 
 ---
 
-## Features
+## Key features
 
-- **Universal Log Format Support**: Analyze logs from Playwright, Selenium (JSON/HAR), or Allure results folder.
-- **Highlight Slow Steps**: Show the slowest steps (`--top N`) or all steps slower than a given
-  threshold (`--threshold`).
-- **Deduplication**: Automatically merges steps with the same name to avoid duplicates in the output.
-- **Advanced Statistics**: Shows median, mean, and custom percentiles (p50, p95, p99, etc.) with the `--percentiles` flag.
-- **Markdown Report Generation**: Generate a Markdown report with `--report`.
-- **Simple CLI**: Analyze logs with a single command.
-- **Python API**: Use as a library in your automation scripts or test infrastructure.
-- **Fast and Lightweight**: Designed to work with very large logs and fast parsing.
+| ✔ | What it does                                                                                           |
+|---|--------------------------------------------------------------------------------------------------------|
+| ✅ | **Auto-detects log format** – just pass a file or an `allure-results` directory, no `--format` needed. |
+| ✅ | Works with **JSON**, **HAR**, and **Allure** out of the box; new parsers plug-in via a simple API.     |
+| ✅ | CLI shows the *top N* slowest steps or everything slower than a threshold.                             |
+| ✅ | Rich-styled **colour output** with ASCII-safe fallback.                                                |
+| ✅ | Generates **Markdown reports** (`--report` flag) for CI artefacts.                                     |
+| ✅ | **A/B comparison** (`compare`) to spot regressions between two runs.                                   |
+| ✅ | MIT-licensed, pure-Python, zero non-std deps except `rich` and `typer`.                                |
+
+> **Coming soon** – paid plug-ins (e.g. *flaky-test detector*).  
+> The core stays FOSS; premium modules will live under the `deeptrace.plugins` namespace and require a licence key.
 
 ---
 
 ## Installation
 
-### Currently, the library is published only on **Test PyPI**
-
 ```bash
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ slowpoke-finder
-```
-
-Install via **pip** (or pipx for global CLI):
-
-```bash
-pip install slowpoke-finder
-```
-
----
-
-## Usage
-
-### CLI: Command-Line Examples
-
-You must specify the input format using --format (or -f): `playwright`, `selenium`, or `allure`. The tool does not
-auto-detect log format.
-
----
-
-### Find Top N Slowest Steps
-
-```bash
-slowpoke-finder analyze path/to/log.json --format playwright --top 5
-```
-
-The `--top` flag is optional and defaults to 5.
-So you can simply run:
-
-```bash
-slowpoke-finder analyze path/to/log.json --format playwright
-```
-
----
-
-### Find All Steps Above a Threshold
-
-```bash
-slowpoke-finder analyze path/to/allure-results --format allure --threshold 1000
-```
-
----
-
-### Show Additional Percentiles
-
-```bash
-slowpoke-finder analyze path/to/log.json --format playwright --percentiles 50 --percentiles 95 --percentiles 99
-```
-
-or short:
-```bash
-slowpoke-finder analyze path/to/log.json -f playwright -p 50 -p 95 -p 99
-```
-
----
-
-### Analyze Selenium HAR Log
-
-```bash
-slowpoke-finder analyze path/to/selenium.har --format selenium
-```
-
----
-
-### Generate a Markdown Report
-Use the `--report` (or `-r`) flag to save results to a Markdown file.
-Specify a directory name (it will be created if it does not exist); the report will be saved as report.md inside that directory.
-```bash
-slowpoke-finder analyze path/to/log.json --format playwright --top 10 --report my-report-dir
-```
-
----
-
-## Common Arguments
-
-`log`: Path to a log file or directory (e.g., JSON, HAR, or Allure results folder).
-
-`--format` / `-f`: Input log format: playwright, selenium, allure.
-
-`--top` / `-n`: Show top N the slowest steps (default: 5).
-
-`--threshold` / `-t`: Show all steps slower than N ms (overrides --top if set).
-
-`--report` / `-r`: Directory to save Markdown report (report will be report.md inside this directory).
-
-`--percentiles` / `-p`: Additional percentiles for summary (repeatable flag).
-
----
-
-## A/B Comparison Report (HTML)
-
-Analyze two test runs side by side with an interactive HTML report.
-Perfect for comparing performance between branches, builds, or environments.
-
-Features of the HTML A/B Report
-- **Horizontal Bar Chart**: Instantly spot the slowest steps between two runs (top 10), side-by-side. 
-- **Sortable Table**: All steps, their durations in both runs, absolute and relative differences. Click any column to sort (ascending/descending)
-
-### Generate a Comparison Report
-
-```bash
-slowpoke-finder compare <runA.json> <runB.json> -f <playwright|selenium|allure> --report-dir ab-report
-```
-
-### Open the Report
-
-```bash
-slowpoke-finder view-report ab-report
-```
-
----
-
-## Python Library Usage
-
-```python
-from deeptrace.core.registry import get
-from deeptrace.core.analyzer import top_slow_steps
-
-parser = get("selenium")
-steps = parser.parse("examples/selenium_actions.json")
-top_steps = top_slow_steps(steps, top=3)
-
-for step in top_steps:
-  print(f"{step.name}: {step.duration} ms")
-```
-
-- Choose the parser by format: `get("selenium")`, `get("playwright")`, or `get("allure")`
-- Each parser returns a list of Step objects (`.name`, `.start_ms`, `.end_ms`, `.duration`)
-
----
-
-## Supported Formats
-
-| Format         | Description                            | How to Use                                 |
-|----------------|----------------------------------------|--------------------------------------------|
-| **playwright** | Playwright JSON logs (`actions` array) | Point at a Playwright JSON log file        |
-| **selenium**   | Selenium WebDriver logs (JSON or HAR)  | Point at a Selenium JSON/HAR log file      |
-| **allure**     | Allure `allure-results` folder (JSON)  | Point at the root of an Allure results dir |
+pip install deeptrace              # from PyPI
+# or
+pipx install deeptrace             # isolates the CLI in its own venv
