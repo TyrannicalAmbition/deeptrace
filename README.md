@@ -1,34 +1,82 @@
 # DeepTrace · Test-log performance analyzer
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TyrannicalAmbition/deeptrace/ci.yml?branch=main)](https://github.com/TyrannicalAmbition/deeptrace/actions)
-[![PyPI Version](https://img.shields.io/pypi/v/deeptrace)](https://pypi.org/project/deeptrace/)
+[![TestPyPI Version](https://img.shields.io/badge/TestPyPI-v0.1.1-blue)](https://test.pypi.org/project/deeptrace/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**DeepTrace** is a tiny CLI + Python library that pinpoints the slowest steps inside automated-test logs  
-(Playwright, Selenium, Allure, and more).  
-Perfect for QA engineers, SDETs and DevOps when every second in the pipeline counts.
+**DeepTrace** is a powerful CLI tool and Python library designed to analyze and identify performance bottlenecks in automated test execution logs. It supports multiple formats including Playwright, Selenium, Allure, HAR files, and generic JSON logs.
+
+## 🎯 What Problems Does DeepTrace Solve?
+
+### Current Challenges:
+- **Slow Test Suites**: Identifying which specific steps are causing pipeline delays
+- **Performance Regressions**: Detecting when tests become slower between releases  
+- **Log Analysis Overhead**: Manual analysis of large test execution logs is time-consuming
+- **Multi-Format Support**: Different testing tools generate different log formats
+- **CI/CD Optimization**: Need for automated performance monitoring in pipelines
+
+### DeepTrace Solutions:
+- ⚡ **Instant Performance Analysis**: Quickly pinpoint the slowest operations in your test logs
+- 📊 **Multi-Format Support**: Works with Playwright, Selenium, Allure, HAR, and JSON logs out of the box
+- 🔍 **Regression Detection**: Compare test runs to identify performance degradations
+- 📈 **Automated Reporting**: Generate markdown reports for CI artifacts and documentation
+- 🎨 **Rich Visual Output**: Beautiful console output with color coding and progress indicators
 
 ---
 
-## Key features
+## ✨ Key Features
 
 | ✔ | What it does                                                                                           |
 |---|--------------------------------------------------------------------------------------------------------|
-| ✅ | **Auto-detects log format** – just pass a file or an `allure-results` directory, no `--format` needed. |
-| ✅ | Works with **JSON**, **HAR**, and **Allure** out of the box; new parsers plug-in via a simple API.     |
-| ✅ | CLI shows the *top N* slowest steps or everything slower than a threshold.                             |
-| ✅ | Rich-styled **colour output** with ASCII-safe fallback.                                                |
-| ✅ | Generates **Markdown reports** (`--report` flag) for CI artefacts.                                     |
-| ✅ | **A/B comparison** (`compare`) to spot regressions between two runs.                                   |
-| ✅ | MIT-licensed, pure-Python, zero non-std deps except `rich` and `typer`.                                |
-
-> **Coming soon** – paid plug-ins (e.g. *flaky-test detector*).  
-> The core stays FOSS; premium modules will live under the `deeptrace.plugins` namespace and require a licence key.
+| ✅ | **Auto-detects log format** – just pass a file or directory, no `--format` flag needed                |
+| ✅ | **Multiple format support** – Playwright, Selenium, Allure, HAR, and generic JSON                     |
+| ✅ | **Performance threshold filtering** – show only steps slower than specified duration                    |
+| ✅ | **Top-N analysis** – display the slowest N operations for quick identification                         |
+| ✅ | **Rich console output** – color-coded, formatted display with ASCII-safe fallback                     |
+| ✅ | **Markdown report generation** – perfect for CI artifacts and documentation                            |
+| ✅ | **A/B comparison mode** – compare two test runs to spot performance regressions                       |
+| ✅ | **Zero-config operation** – works out of the box with sensible defaults                               |
+| ✅ | **Extensible parser API** – easily add support for new log formats                                    |
 
 ---
 
-## Installation
+## 🚀 Planned Features (Roadmap)
 
+### 🔬 Advanced Analytics
+- **Flaky Test Detection**: Identify tests with inconsistent execution times
+- **Performance Trend Analysis**: Track performance changes over multiple runs
+- **Bottleneck Categorization**: Classify slow operations by type (network, DOM, computation)
+
+### 🐳 Extended Format Support
+- **Docker Log Analysis**: Parse and analyze container execution logs
+- **Kubernetes Pod Logs**: Support for distributed test execution analysis
+- **Custom Log Formats**: Enhanced plugin system for proprietary formats
+
+### 📊 Enhanced Reporting
+- **Interactive HTML Reports**: Rich visualizations with charts and graphs
+- **Integration APIs**: Direct integration with popular CI/CD platforms
+- **Performance Dashboards**: Real-time monitoring and alerting capabilities
+
+### 🔌 Enterprise Features
+- **Premium Plugins**: Advanced features under `deeptrace.plugins` namespace
+- **Team Collaboration**: Shared analysis and reporting features
+- **Performance SLA Monitoring**: Automated alerts when thresholds are exceeded
+
+---
+
+## 📦 Installation
+
+### From TestPyPI (Latest Development Version)
 ```bash
-pip install deeptrace              # from PyPI
-# or
-pipx install deeptrace             # isolates the CLI in its own venv
+# Install from TestPyPI
+pip install -i https://test.pypi.org/simple/ deeptrace
+
+# Or with pipx for isolated installation
+pipx install -i https://test.pypi.org/simple/ deeptrace
+```
+
+### From PyPI (Stable Release - Coming Soon)
+```bash
+# Will be available soon on PyPI
+pip install deeptrace
+pipx install deeptrace
