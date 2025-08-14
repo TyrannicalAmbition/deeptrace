@@ -6,7 +6,7 @@
 
 **DeepTrace** is a powerful CLI tool and Python library designed to analyze and identify performance bottlenecks in automated test execution logs. It supports multiple formats including Playwright, Selenium, Allure, HAR files, and generic JSON logs.
 
-## 🎯 What Problems Does DeepTrace Solve?
+## What Problems Does DeepTrace Solve?
 
 ### Current Challenges:
 - **Slow Test Suites**: Identifying which specific steps are causing pipeline delays
@@ -16,15 +16,15 @@
 - **CI/CD Optimization**: Need for automated performance monitoring in pipelines
 
 ### DeepTrace Solutions:
-- ⚡ **Instant Performance Analysis**: Quickly pinpoint the slowest operations in your test logs
-- 📊 **Multi-Format Support**: Works with Playwright, Selenium, Allure, HAR, and JSON logs out of the box
-- 🔍 **Regression Detection**: Compare test runs to identify performance degradations
-- 📈 **Automated Reporting**: Generate markdown reports for CI artifacts and documentation
-- 🎨 **Rich Visual Output**: Beautiful console output with color coding and progress indicators
+- **Instant Performance Analysis**: Quickly pinpoint the slowest operations in your test logs
+- **Multi-Format Support**: Works with Playwright, Selenium, Allure, HAR, and JSON logs out of the box
+- **Regression Detection**: Compare test runs to identify performance degradations
+- **Automated Reporting**: Generate markdown reports for CI artifacts and documentation
+- **Rich Visual Output**: Beautiful console output with color coding and progress indicators
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 | ✔ | What it does                                                                                           |
 |---|--------------------------------------------------------------------------------------------------------|
@@ -40,31 +40,31 @@
 
 ---
 
-## 🚀 Planned Features (Roadmap)
+## Planned Features (Roadmap)
 
 ### 🔬 Advanced Analytics
 - **Flaky Test Detection**: Identify tests with inconsistent execution times
 - **Performance Trend Analysis**: Track performance changes over multiple runs
 - **Bottleneck Categorization**: Classify slow operations by type (network, DOM, computation)
 
-### 🐳 Extended Format Support
+### Extended Format Support
 - **Docker Log Analysis**: Parse and analyze container execution logs
 - **Kubernetes Pod Logs**: Support for distributed test execution analysis
 - **Custom Log Formats**: Enhanced plugin system for proprietary formats
 
-### 📊 Enhanced Reporting
+### Enhanced Reporting
 - **Interactive HTML Reports**: Rich visualizations with charts and graphs
 - **Integration APIs**: Direct integration with popular CI/CD platforms
 - **Performance Dashboards**: Real-time monitoring and alerting capabilities
 
-### 🔌 Enterprise Features
+### Enterprise Features
 - **Premium Plugins**: Advanced features under `deeptrace.plugins` namespace
 - **Team Collaboration**: Shared analysis and reporting features
 - **Performance SLA Monitoring**: Automated alerts when thresholds are exceeded
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### From TestPyPI (Latest Development Version)
 ```bash
